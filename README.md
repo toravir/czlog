@@ -17,6 +17,12 @@ int main () {
     doLog(hdl, L_INT("price", 1000), L_STR("Desc", "Thousand Dollars"), L_PRINT);
 ```
 
+Output:
+```
+{"price":100,"Desc":"Hundred Dollars"}
+{"price":1000,"Desc":"Thousand Dollars"}
+```
+
 Steps:
 ```
 make all

@@ -34,6 +34,7 @@ TODO:
 [ ] Logging Levels
 [ ] Auto Timestamp option
 [ ] Add CBOR Encoding
+[ ] Add Documentation
 [ ] Adding more scalar data types
 [ ] Adding complex data types - Arrays
 [ ] Adding custom data types with callbacks

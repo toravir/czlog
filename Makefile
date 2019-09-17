@@ -1,6 +1,7 @@
 
 ALL_SRC_FILES := encoder.c \
 		 jsonEncoder.c \
+		 cborEncoder.c \
 		 logger.c \
 		 private.c \
 

@@ -8,7 +8,10 @@ Encoding can be either a text (JSON) or binary (CBOR).
 Example:
 ```
 #include "logger.h"
-    logHandle *hdl = newlogHandle(NULL, LOG_INFO); // "/tmp/q1");
+    logHandle *hdl = newlogHandle(NULL, LOG_INFO); // NULL for stdout or some file name
+
+    logHandle *hdl = newBinLogHandle(NULL, LOG_INFO); // For a binary logger
+
     doLog(hdl, LOG_INFO, L_INT("price", 100), L_STR("Desc", "Hundred Dollars"), L_END);
     doLog(hdl, LOG_INFO, L_PRINT);
     doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Thousand Dollars"), L_PRINT);
@@ -34,7 +37,7 @@ make test
 TODO:
  -  ~~Logging Levels~~
  -  ~~Auto Timestamp option~~
- -  Add CBOR Encoding
+ -  ~~Add CBOR Encoding~~
  -  Add Documentation (auto-gen doc ??)
  -  Adding more scalar data types
  -  Adding complex data types - Arrays

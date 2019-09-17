@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "encoder.h"
 #include "jsonEncoder.h"
+#include "cborEncoder.h"
 
 static char gLevelKey[] = "level";
 static char gTsKey[] = "time";
@@ -92,7 +93,7 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                     if (hdl->autoTs) v->addTs(hdl, gTsKey);
                     v->addEndDoc(hdl);
                 }
-                fprintf(hdl->outputFile, "%s\n", hdl->_buf);
+                fwrite(hdl->_buf, hdl->offset, 1, hdl->outputFile);
                 resetHandle(hdl);
                 end = 1;
                 break;
@@ -108,6 +109,25 @@ logHandle *newlogHandle (const char *opFile, logLevel lvl)
         return NULL;
     }
     newHdl->fmt = LOG_JSON_ENCODING;
+    newHdl->level = lvl;
+    newHdl->autoTs = TRUE;
+    if (opFile) {
+        newHdl->outputFile = fopen(opFile, "a+");
+    }
+    if (!newHdl->outputFile) {
+        newHdl->outputFile = stdout;
+    }
+    resetHandle(newHdl);
+    return newHdl;
+}
+
+logHandle *newBinLogHandle (const char *opFile, logLevel lvl) 
+{
+    logHandle *newHdl = calloc(1, sizeof(logHandle));
+    if (!newHdl) {
+        return NULL;
+    }
+    newHdl->fmt = LOG_CBOR_ENCODING;
     newHdl->level = lvl;
     newHdl->autoTs = TRUE;
     if (opFile) {
@@ -146,4 +166,5 @@ void logger_init (void)
 {
     //Add any new encoder here..
     initJsonEncoder();
+    initCborEncoder();
 }

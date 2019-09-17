@@ -3,24 +3,27 @@
 #include "encoder.h"
 #include "jsonEncoder.h"
 
+static int addDelimIfNeeded (logHandle *hdl)
+{
+    if (hdl->_buf[hdl->offset-1] == '{') {
+        return 0;
+    }
+    hdl->_buf[hdl->offset++]=',';
+    return 0;
+}
+
 static int addIntTupleJson (logHandle *hdl, const char *key, int val)
 {
-    unsigned char *delim = ",";
-    if (hdl->_buf[hdl->offset-1] == '{') {
-        delim = "" ;
-    }
-    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "%s\"%s\":%d", delim, key, val);
+    addDelimIfNeeded(hdl);
+    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "\"%s\":%d", key, val);
     hdl->offset += n;
     return 0;
 }
 
 static int addStrTupleJson (logHandle *hdl, const char *key, const char *val)
 {
-    unsigned char *delim = ",";
-    if (hdl->_buf[hdl->offset-1] == '{') {
-        delim = "" ;
-    }
-    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "%s\"%s\":\"%s\"", delim, key, val);
+    addDelimIfNeeded(hdl);
+    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "\"%s\":\"%s\"", key, val);
     hdl->offset += n;
     return 0;
 }
@@ -45,11 +48,8 @@ static int addTsJson (logHandle *hdl, const char *key)
     time(&now);
     struct tm *p = localtime(&now);
 
-    unsigned char *delim = ",";
-    if (hdl->_buf[hdl->offset-1] == '{') {
-        delim = "" ;
-    }
-    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "%s\"%s\":\"", delim, key);
+    addDelimIfNeeded(hdl);
+    int n = snprintf(hdl->_buf+hdl->offset, sizeof(hdl->_buf)-hdl->offset-1, "\"%s\":\"", key);
     hdl->offset += n;
 
     char *st = hdl->_buf+hdl->offset;

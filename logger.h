@@ -59,6 +59,7 @@ extern dType intType, strType, endType, tsType, prtType;
 
 
 logHandle *newlogHandle (const char *opFile, logLevel minLevel);
+logHandle *newBinLogHandle (const char *opFile, logLevel lvl);
 int doLog (logHandle *hdl, logLevel lgLvl, ...);
 int setLogLevel(logHandle *hdl, logLevel lvl);
 int setLogAutoTs(logHandle *hdl, boolean enable);

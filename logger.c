@@ -4,6 +4,7 @@
 #include "jsonEncoder.h"
 
 static char gLevelKey[] = "level";
+static char gTsKey[] = "time";
 
 static void resetHandle (logHandle *hdl)
 {
@@ -68,6 +69,7 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
         switch (nxtType->type) {
             case END_KV:
                 v->addStrTuple(hdl, gLevelKey, logLevelStr(hdl->curMsgLevel));
+                if (hdl->autoTs) v->addTs(hdl, gTsKey);
                 v->addEndDoc(hdl);
                 hdl->terminated = TRUE;
                 end = 1;
@@ -87,6 +89,7 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
             case PRT_KV: {
                 if (!hdl->terminated) {
                     v->addStrTuple(hdl, gLevelKey, logLevelStr(hdl->curMsgLevel));
+                    if (hdl->autoTs) v->addTs(hdl, gTsKey);
                     v->addEndDoc(hdl);
                 }
                 fprintf(hdl->outputFile, "%s\n", hdl->_buf);
@@ -98,14 +101,6 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
     }
 }
 
-/*
-typedef struct logger_st_ {
-	FILE *outputFile;
-	logEncodingFmt fmt;
-	const char _int_buf[INT_BUF_SZ+1];
-	unsigned int offset;
-} logHandle;
-*/
 logHandle *newlogHandle (const char *opFile, logLevel lvl) 
 {
     logHandle *newHdl = calloc(1, sizeof(logHandle));
@@ -114,6 +109,7 @@ logHandle *newlogHandle (const char *opFile, logLevel lvl)
     }
     newHdl->fmt = LOG_JSON_ENCODING;
     newHdl->level = lvl;
+    newHdl->autoTs = TRUE;
     if (opFile) {
         newHdl->outputFile = fopen(opFile, "a+");
     }
@@ -122,6 +118,28 @@ logHandle *newlogHandle (const char *opFile, logLevel lvl)
     }
     resetHandle(newHdl);
     return newHdl;
+}
+
+int setLogLevel(logHandle *hdl, logLevel lvl)
+{
+    if (!hdl) {
+        return -1;
+    }
+    hdl->level = lvl;
+    return 0;
+}
+
+int setLogAutoTs(logHandle *hdl, boolean enable)
+{
+    if (!hdl) {
+        return -1;
+    }
+    if (enable) {
+        hdl->autoTs = TRUE;
+    } else {
+        hdl->autoTs = FALSE;
+    }
+    return 0;
 }
 
 void logger_init (void)

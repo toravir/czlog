@@ -10,6 +10,7 @@ typedef struct logEncodersSt_ {
     int (*addStrTuple)(logHandle *hdl, const char *key, const char *val);
     int (*addBeginDoc)(logHandle *hdl);
     int (*addEndDoc)(logHandle *hdl);
+    int (*addTs)(logHandle *hdl, const char *key);
 } logEncoder_t;
 
 int registerLogEncoder(logEncodingFmt fmt, logEncoder_t *encoder);

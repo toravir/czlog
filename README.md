@@ -32,7 +32,7 @@ make test
 
 TODO:
  -  ~~Logging Levels~~
- -  Auto Timestamp option
+ -  ~~Auto Timestamp option~~
  -  Add CBOR Encoding
  -  Add Documentation (auto-gen doc ??)
  -  Adding more scalar data types
@@ -41,4 +41,5 @@ TODO:
  -  Adding Context / Cloning Handles
  -  Sampler
  -  Benchmarks
+ -  Support different formats of timestamps
 

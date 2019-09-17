@@ -35,6 +35,7 @@ typedef struct logger_st_ {
         logLevel level;
         logLevel curMsgLevel;
         boolean terminated;
+        boolean autoTs;
 } logHandle;
 
 typedef struct dtype_st_ {
@@ -59,5 +60,7 @@ extern dType intType, strType, endType, tsType, prtType;
 
 logHandle *newlogHandle (const char *opFile, logLevel minLevel);
 int doLog (logHandle *hdl, logLevel lgLvl, ...);
+int setLogLevel(logHandle *hdl, logLevel lvl);
+int setLogAutoTs(logHandle *hdl, boolean enable);
 
 #endif /*  __LOGGER_H__ */

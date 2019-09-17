@@ -29,3 +29,15 @@ make all
 
 make test
 ```
+
+TODO:
+[ ] Logging Levels
+[ ] Auto Timestamp option
+[ ] Add CBOR Encoding
+[ ] Adding more scalar data types
+[ ] Adding complex data types - Arrays
+[ ] Adding custom data types with callbacks
+[ ] Adding Context / Cloning Handles
+[ ] Sampler
+
+

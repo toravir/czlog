@@ -14,6 +14,17 @@ typedef enum logEncoding_e_ {
 	LOG_JSON_ENCODING = 2,
 } logEncodingFmt;
 
+typedef enum logLevels_e_ {
+    LOG_INVALID = 0,
+    LOG_DEBUG   = 1,
+    LOG_INFO    = 2,
+    LOG_WARN    = 3,
+    LOG_ERROR   = 4,
+    LOG_FATAL   = 5,
+    LOG_PANIC   = 6,
+    LOG_DISABLE = 100,
+} logLevel;
+
 #define INT_BUF_SZ (256)
 
 typedef struct logger_st_ {
@@ -21,6 +32,8 @@ typedef struct logger_st_ {
 	logEncodingFmt fmt;
 	char _buf[INT_BUF_SZ+1];
 	unsigned int offset;
+        logLevel level;
+        logLevel curMsgLevel;
         boolean terminated;
 } logHandle;
 
@@ -44,7 +57,7 @@ extern dType intType, strType, endType, tsType, prtType;
 #define L_PRINT &prtType
 
 
-logHandle *newlogHandle (const char *opFile);
-int doLog (logHandle *hdl, ...);
+logHandle *newlogHandle (const char *opFile, logLevel minLevel);
+int doLog (logHandle *hdl, logLevel lgLvl, ...);
 
 #endif /*  __LOGGER_H__ */

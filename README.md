@@ -31,15 +31,14 @@ make test
 ```
 
 TODO:
-```
-[ ] Logging Levels
-[ ] Auto Timestamp option
-[ ] Add CBOR Encoding
-[ ] Add Documentation (auto-gen doc ??)
-[ ] Adding more scalar data types
-[ ] Adding complex data types - Arrays
-[ ] Adding custom data types with callbacks
-[ ] Adding Context / Cloning Handles
-[ ] Sampler
-```
+ -  ~~Logging Levels~~
+ -  Auto Timestamp option
+ -  Add CBOR Encoding
+ -  Add Documentation (auto-gen doc ??)
+ -  Adding more scalar data types
+ -  Adding complex data types - Arrays
+ -  Adding custom data types with callbacks
+ -  Adding Context / Cloning Handles
+ -  Sampler
+ -  Benchmarks
 

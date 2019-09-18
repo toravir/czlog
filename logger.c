@@ -131,7 +131,7 @@ logHandle *newBinLogHandle (const char *opFile, logLevel lvl)
     newHdl->level = lvl;
     newHdl->autoTs = TRUE;
     if (opFile) {
-        newHdl->outputFile = fopen(opFile, "a+");
+        newHdl->outputFile = fopen(opFile, "a+b");
     }
     if (!newHdl->outputFile) {
         newHdl->outputFile = stdout;

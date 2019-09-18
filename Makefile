@@ -9,14 +9,15 @@ DEBUG_FLAG := -g
 
 TGT_SO := liblogger.so
 
-all:
+$(TGT_SO): $(ALL_SRC_FILES)
 	gcc -shared -fpic $(DEBUG_FLAG) $(ALL_SRC_FILES) -Wl,-init,logger_init -o $(TGT_SO)
 	gcc $(DEBUG_FLAG) -L . example.c -llogger -o example
+	gcc $(DEBUG_FLAG) -L . binLogExample.c -llogger -o binLogExample
 
 clean:
-	rm -f $(TGT_SO) example
+	rm -f $(TGT_SO) example binLogExample
 
-test: all
+test: $(TGT_SO)
 	LD_LIBRARY_PATH=`pwd` ./example
 
 

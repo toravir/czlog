@@ -38,12 +38,14 @@ TODO:
  -  ~~Logging Levels~~
  -  ~~Auto Timestamp option~~
  -  ~~Add CBOR Encoding~~
+ -  Adding Context / Cloning Handles
  -  Add Documentation (auto-gen doc ??)
+ -  Automated Tests
  -  Adding more scalar data types
+ -  Benchmarks
+ -  Travis CI Integration ?
  -  Adding complex data types - Arrays
  -  Adding custom data types with callbacks
- -  Adding Context / Cloning Handles
  -  Sampler
- -  Benchmarks
  -  Support different formats of timestamps
-
+ 

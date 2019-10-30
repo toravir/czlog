@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdlib.h>
 #include "logger.h"
 #include "encoder.h"
@@ -9,7 +10,7 @@ static char gTsKey[] = "time";
 
 static void resetHandle (logHandle *hdl)
 {
-    hdl->offset = 0;
+    hdl->_buf_offset = 0;
     hdl->terminated = FALSE;
     hdl->curMsgLevel = LOG_DISABLE; //Start with no level.
     return;
@@ -60,7 +61,7 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
         //Pick the highest level if multiple levels are provided
         hdl->curMsgLevel = lgLvl;
     }
-    if (hdl->offset == 0) {
+    if (hdl->_buf_offset == 0) {
         //add the begin Char
         v->addBeginDoc(hdl);
     }
@@ -93,7 +94,12 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                     if (hdl->autoTs) v->addTs(hdl, gTsKey);
                     v->addEndDoc(hdl);
                 }
-                fwrite(hdl->_buf, hdl->offset, 1, hdl->outputFile);
+                int skipBytes = 0;
+                if (hdl->_ctx_offset) {
+                    fwrite(hdl->_ctx, hdl->_ctx_offset, 1, hdl->outputFile);
+                    skipBytes = v->beginMarkerSz();
+                }
+                fwrite(hdl->_buf + skipBytes, hdl->_buf_offset - skipBytes, 1, hdl->outputFile);
                 resetHandle(hdl);
                 end = 1;
                 break;
@@ -167,4 +173,39 @@ void logger_init (void)
     //Add any new encoder here..
     initJsonEncoder();
     initCborEncoder();
+}
+
+int saveToCtx(logHandle *hdl)
+{
+    if (!hdl) {
+        return -1;
+    }
+    if (!hdl->_buf_offset) {
+        return 0;
+    }
+    hdl->_ctx = realloc(hdl->_ctx, hdl->_buf_offset + hdl->_ctx_offset);
+    if (!hdl->_ctx) {
+        return -1;
+    }
+    logEncoder_t *v = getLogEncoder(hdl->fmt);
+    v->saveToCtx(hdl);
+    resetHandle(hdl);
+}
+
+logHandle *cloneHdl (logHandle *hdl)
+{
+    logHandle *newHdl = calloc(1, sizeof(logHandle));
+    if (!newHdl) {
+        return NULL;
+    }
+    void *ctxCopy = calloc(1, hdl->_ctx_offset);
+    if (!ctxCopy) {
+        free(newHdl);
+        return NULL;
+    }
+
+    *newHdl = *hdl;
+    newHdl->_ctx = ctxCopy;
+    memcpy(ctxCopy, hdl->_ctx, hdl->_ctx_offset);
+    return newHdl;
 }

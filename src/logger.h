@@ -30,8 +30,10 @@ typedef enum logLevels_e_ {
 typedef struct logger_st_ {
 	FILE *outputFile;
 	logEncodingFmt fmt;
+        char *_ctx;
+	unsigned int _ctx_offset;
 	char _buf[INT_BUF_SZ+1];
-	unsigned int offset;
+	unsigned int _buf_offset;
         logLevel level;
         logLevel curMsgLevel;
         boolean terminated;
@@ -63,5 +65,8 @@ logHandle *newBinLogHandle (const char *opFile, logLevel lvl);
 int doLog (logHandle *hdl, logLevel lgLvl, ...);
 int setLogLevel(logHandle *hdl, logLevel lvl);
 int setLogAutoTs(logHandle *hdl, boolean enable);
+int saveToCtx(logHandle *hdl);
+logHandle *cloneHdl(logHandle *hdl);
+
 
 #endif /*  __LOGGER_H__ */

@@ -60,11 +60,11 @@ static int appendIntValue(logHandle *hdl, byte major, unsigned long long val)
         minor = additionalTypeIntUint64;
         bc = 8;
     }
-    hdl->_buf[hdl->offset++] = major|minor;
+    hdl->_buf[hdl->_buf_offset++] = major|minor;
 
     bc--;
     for (; bc >= 0; bc--) {
-        hdl->_buf[hdl->offset++] = (unsigned char)(val >> (bc*8));
+        hdl->_buf[hdl->_buf_offset++] = (unsigned char)(val >> (bc*8));
     }
     return 0;
 }
@@ -76,12 +76,12 @@ static int appendStr(logHandle *hdl, const char *str)
 
     if (l <= additionalMax) {
         byte v = (byte)l;
-        hdl->_buf[hdl->offset++] = major|v;
+        hdl->_buf[hdl->_buf_offset++] = major|v;
     } else {
         appendIntValue(hdl, major, l);
     }
-    int n = snprintf(hdl->_buf + hdl->offset, sizeof(hdl->_buf) - hdl->offset, "%s", str);
-    hdl->offset+=n;
+    int n = snprintf(hdl->_buf + hdl->_buf_offset, sizeof(hdl->_buf) - hdl->_buf_offset, "%s", str);
+    hdl->_buf_offset+=n;
     return 0;
 }
 
@@ -103,7 +103,7 @@ static int addIntTupleCbor (logHandle *hdl, const char *key, int val)
 
     if (intVal <= additionalMax) {
         byte v = (byte) val;
-        hdl->_buf[hdl->offset++] = major|v;
+        hdl->_buf[hdl->_buf_offset++] = major|v;
     } else {
         appendIntValue(hdl, major, val);
     }
@@ -119,13 +119,13 @@ static int addStrTupleCbor (logHandle *hdl, const char *key, const char *val)
 
 static int addBeginDocCbor (logHandle *hdl)
 {
-    hdl->_buf[hdl->offset++] = majorTypeMap|additionalTypeUnspecCount;
+    hdl->_buf[hdl->_buf_offset++] = majorTypeMap|additionalTypeUnspecCount;
     return 0;
 }
 
 static int addEndDocCbor (logHandle *hdl)
 {
-    hdl->_buf[hdl->offset++] = majorTypeSimplenFloat|additionalTypeBreak;
+    hdl->_buf[hdl->_buf_offset++] = majorTypeSimplenFloat|additionalTypeBreak;
     return 0;
 }
 
@@ -134,7 +134,7 @@ static int addTsCbor (logHandle *hdl, const char *key)
     time_t now;
     time(&now);
 
-    hdl->_buf[hdl->offset++] = majorTypeTags|additionalTypeTimestamp;
+    hdl->_buf[hdl->_buf_offset++] = majorTypeTags|additionalTypeTimestamp;
     appendIntValue(hdl, majorTypeUnsignedInt, (int)now);
     return 0;
 }

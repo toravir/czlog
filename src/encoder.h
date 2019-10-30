@@ -11,6 +11,8 @@ typedef struct logEncodersSt_ {
     int (*addBeginDoc)(logHandle *hdl);
     int (*addEndDoc)(logHandle *hdl);
     int (*addTs)(logHandle *hdl, const char *key);
+    int (*saveToCtx)(logHandle *hdl);
+    int (*beginMarkerSz)(void);
 } logEncoder_t;
 
 int registerLogEncoder(logEncodingFmt fmt, logEncoder_t *encoder);

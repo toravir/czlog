@@ -38,7 +38,7 @@ TODO:
  -  ~~Logging Levels~~
  -  ~~Auto Timestamp option~~
  -  ~~Add CBOR Encoding~~
- -  Adding Context / Cloning Handles
+ -  ~~Adding Context / Cloning Handles~~
  -  Add Documentation (auto-gen doc ??)
  -  Automated Tests
  -  Adding more scalar data types

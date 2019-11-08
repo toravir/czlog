@@ -28,7 +28,7 @@ typedef enum logLevels_e_ {
 #define INT_BUF_SZ (256)
 
 typedef struct logger_st_ {
-	FILE *outputFile;
+	unsigned int outputFile;
 	logEncodingFmt fmt;
         char *_ctx;
 	unsigned int _ctx_offset;
@@ -60,8 +60,8 @@ extern dType intType, strType, endType, tsType, prtType;
 #define L_PRINT &prtType
 
 
-logHandle *newlogHandle (const char *opFile, logLevel minLevel);
-logHandle *newBinLogHandle (const char *opFile, logLevel lvl);
+logHandle *newlogHandle   (const char *opFile, logLevel minLevel, boolean isBinary);
+logHandle *newlogHandleFd (int destFd, logLevel minLevel, boolean isBinary);
 int doLog (logHandle *hdl, logLevel lgLvl, ...);
 int setLogLevel(logHandle *hdl, logLevel lvl);
 int setLogAutoTs(logHandle *hdl, boolean enable);

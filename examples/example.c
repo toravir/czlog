@@ -8,7 +8,7 @@ int fooBar(logHandle *hdl)
 
 int main () 
 {
-    logHandle *hdl = newlogHandle(NULL, LOG_INFO); // "/tmp/q1");
+    logHandle *hdl = newlogHandleFd(1, LOG_INFO, 0); // "/tmp/q1");
     //doLog(hdl, LOG_INFO, L_INT("price", 100), L_STR("Desc", "Hundred Dollars"), L_END);
     //doLog(hdl, LOG_INFO, L_PRINT);
     //doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Thousand Dollars"), L_PRINT);

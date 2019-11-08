@@ -1,5 +1,9 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "logger.h"
 #include "encoder.h"
 #include "jsonEncoder.h"
@@ -37,6 +41,20 @@ static const char *logLevelStr(logLevel lvl)
             return "<DISABLED LEVEL>";
     }
     return "Unknown Level";
+}
+
+static int writeLog (const char *buf, int bufLen, int destFd)
+{
+    int bytesWritten = 0;
+    int thisWriteBytes = 0;
+    while (bytesWritten < bufLen) {
+        thisWriteBytes = write(destFd, buf+bytesWritten, bufLen-bytesWritten);
+        if (thisWriteBytes < 0) {
+            return -1;
+        }
+        bytesWritten += thisWriteBytes;
+    }
+    return bytesWritten;
 }
 
 int doLog (logHandle *hdl, logLevel lgLvl, ...)
@@ -96,10 +114,10 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                 }
                 int skipBytes = 0;
                 if (hdl->_ctx_offset) {
-                    fwrite(hdl->_ctx, hdl->_ctx_offset, 1, hdl->outputFile);
+                    writeLog(hdl->_ctx, hdl->_ctx_offset, hdl->outputFile);
                     skipBytes = v->beginMarkerSz();
                 }
-                fwrite(hdl->_buf + skipBytes, hdl->_buf_offset - skipBytes, 1, hdl->outputFile);
+                writeLog(hdl->_buf + skipBytes, hdl->_buf_offset - skipBytes, hdl->outputFile);
                 resetHandle(hdl);
                 end = 1;
                 break;
@@ -108,8 +126,11 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
     }
 }
 
-logHandle *newlogHandle (const char *opFile, logLevel lvl) 
+logHandle *newlogHandle (const char *opFile, logLevel lvl, boolean isBinary) 
 {
+    if (!opFile) {
+        return NULL;
+    }
     logHandle *newHdl = calloc(1, sizeof(logHandle));
     if (!newHdl) {
         return NULL;
@@ -117,31 +138,33 @@ logHandle *newlogHandle (const char *opFile, logLevel lvl)
     newHdl->fmt = LOG_JSON_ENCODING;
     newHdl->level = lvl;
     newHdl->autoTs = TRUE;
-    if (opFile) {
-        newHdl->outputFile = fopen(opFile, "a+");
+    if (isBinary) {
+        newHdl->fmt = LOG_CBOR_ENCODING;
     }
-    if (!newHdl->outputFile) {
-        newHdl->outputFile = stdout;
-    }
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // 0644 mode
+    newHdl->outputFile = open(opFile, O_CREAT | O_APPEND, mode);
     resetHandle(newHdl);
     return newHdl;
 }
 
-logHandle *newBinLogHandle (const char *opFile, logLevel lvl) 
+logHandle *newlogHandleFd (int destFd, logLevel lvl, boolean isBinary) 
 {
+    //Cannot write to stdin
+    if (!destFd) {
+        return NULL;
+    }
+
     logHandle *newHdl = calloc(1, sizeof(logHandle));
     if (!newHdl) {
         return NULL;
     }
-    newHdl->fmt = LOG_CBOR_ENCODING;
+    newHdl->fmt = LOG_JSON_ENCODING;
     newHdl->level = lvl;
     newHdl->autoTs = TRUE;
-    if (opFile) {
-        newHdl->outputFile = fopen(opFile, "a+b");
+    if (isBinary) {
+        newHdl->fmt = LOG_CBOR_ENCODING;
     }
-    if (!newHdl->outputFile) {
-        newHdl->outputFile = stdout;
-    }
+    newHdl->outputFile = destFd;
     resetHandle(newHdl);
     return newHdl;
 }

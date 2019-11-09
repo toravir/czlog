@@ -30,7 +30,7 @@ Output:
 
 Steps:
 ```
-make all
+make
 make test
 ```
 

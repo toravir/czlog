@@ -16,7 +16,7 @@ $(TGT_SO): $(ALL_SRC_FILES)
 	gcc $(DEBUG_FLAG) -I include -L . tests/check_logger.c -llogger -o testLogger -lcheck -lm -lpthread -lrt -lsubunit
 
 clean:
-	rm -f $(TGT_SO) example binLogExample
+	rm -f $(TGT_SO) example binLogExample testLogger
 
 test: $(TGT_SO)
 	LD_LIBRARY_PATH=`pwd` ./example

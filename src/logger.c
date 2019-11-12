@@ -94,6 +94,10 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                 hdl->terminated = TRUE;
                 end = 1;
                 break;
+            case MOR_KV: {
+                end = 1;
+                break;
+            }
             case INT_KV: {
                 k = (char*)va_arg(vl, char*);
                 int val = (int)va_arg(vl, int);

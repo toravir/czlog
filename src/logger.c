@@ -94,6 +94,10 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                 hdl->terminated = TRUE;
                 end = 1;
                 break;
+            case MOR_KV: {
+                end = 1;
+                break;
+            }
             case INT_KV: {
                 k = (char*)va_arg(vl, char*);
                 int val = (int)va_arg(vl, int);
@@ -198,6 +202,20 @@ void logger_init (void)
     initCborEncoder();
 }
 
+int clearCtx(logHandle *hdl)
+{
+    if (hdl) {
+        if (hdl->_ctx) {
+            free(hdl->_ctx);
+            hdl->_ctx = NULL;
+            hdl->_ctx_offset = 0;
+        }
+        return 0;
+    }
+    return -1;
+}
+
+
 int saveToCtx(logHandle *hdl)
 {
     if (!hdl) {
@@ -213,6 +231,7 @@ int saveToCtx(logHandle *hdl)
     logEncoder_t *v = getLogEncoder(hdl->fmt);
     v->saveToCtx(hdl);
     resetHandle(hdl);
+    return 0;
 }
 
 logHandle *cloneHdl (logHandle *hdl)

@@ -18,6 +18,8 @@ $(TGT_SO): $(ALL_SRC_FILES)
 clean:
 	rm -f $(TGT_SO) example binLogExample testLogger
 
+tests: test
+
 test: $(TGT_SO)
 	LD_LIBRARY_PATH=`pwd` ./example
 	LD_LIBRARY_PATH=`pwd` ./testLogger

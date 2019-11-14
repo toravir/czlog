@@ -61,14 +61,13 @@ extern dType intType, strType, endType, tsType, prtType, moreType;
 #define L_PRINT &prtType
 #define L_MORE &moreType
 
-
 logHandle *newlogHandle   (const char *opFile, logLevel minLevel, boolean isBinary);
 logHandle *newlogHandleFd (int destFd, logLevel minLevel, boolean isBinary);
 int doLog (logHandle *hdl, logLevel lgLvl, ...);
 int setLogLevel(logHandle *hdl, logLevel lvl);
 int setLogAutoTs(logHandle *hdl, boolean enable);
 int saveToCtx(logHandle *hdl);
+int clearCtx(logHandle *hdl);
 logHandle *cloneHdl(logHandle *hdl);
-
 
 #endif /*  __LOGGER_H__ */

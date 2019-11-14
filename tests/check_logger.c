@@ -144,6 +144,87 @@ START_TEST(test_logger_multiple_call) {
   unlink(tmpFile);
 } END_TEST
 
+START_TEST(test_logger_levels) {
+  logHandle *m;
+  char tmpFile[] = "/tmp/libczTest_XXXXXX";
+  m = newlogHandleFd(mkstemp(tmpFile), LOG_ERROR, 0);
+  ck_assert_ptr_ne(m, NULL);
+  FILE *rdback = fopen(tmpFile, "r");
+  char *logLine = NULL;
+  size_t lineLen = 0;
+  char *expectedBuf = NULL;
+  setLogAutoTs(m, FALSE);
+
+  doLog(m, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_PRINT);
+  doLog(m, LOG_ERROR, L_INT("price", 1000), L_STR("Desc", "Error level string"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Error level string\",\"level\":\"error\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  doLog(m, LOG_FATAL, L_INT("price", 1000), L_STR("Desc", "Fatal level string"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Fatal level string\",\"level\":\"fatal\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  doLog(m, LOG_PANIC, L_INT("price", 1000), L_STR("Desc", "Panic level string"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Panic level string\",\"level\":\"panic\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  setLogLevel(m, LOG_FATAL);
+  doLog(m, LOG_INFO,  L_INT("price", 1000), L_STR("Desc", "Info level string"),  L_PRINT);
+  doLog(m, LOG_DEBUG, L_INT("price", 1000), L_STR("Desc", "Debug level string"), L_PRINT);
+  doLog(m, LOG_ERROR, L_INT("price", 1000), L_STR("Desc", "Error level string"), L_PRINT);
+  doLog(m, LOG_FATAL, L_INT("price", 1000), L_STR("Desc", "Fatal level string"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Fatal level string\",\"level\":\"fatal\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  unlink(tmpFile);
+} END_TEST
+
+START_TEST(test_logger_context) {
+  logHandle *m;
+  char tmpFile[] = "/tmp/libczTest_XXXXXX";
+  m = newlogHandleFd(mkstemp(tmpFile), LOG_INFO, 0);
+  ck_assert_ptr_ne(m, NULL);
+  FILE *rdback = fopen(tmpFile, "r");
+  char *logLine = NULL;
+  size_t lineLen = 0;
+  char *expectedBuf = NULL;
+  setLogAutoTs(m, FALSE);
+
+  doLog(m, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_MORE);
+  saveToCtx(m);
+
+  logHandle *mctx = cloneHdl(m);
+  clearCtx(m);
+
+  doLog(mctx, LOG_ERROR, L_STR("Ctx", "in m1 context"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Without TS\",\"Ctx\":\"in m1 context\",\"level\":\"error\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  doLog(m, LOG_FATAL, L_INT("price", 1000), L_STR("Desc", "Fatal level string"), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Fatal level string\",\"level\":\"fatal\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  doLog(mctx, LOG_PANIC, L_INT("Sub Price", 1000), L_PRINT);
+  expectedBuf="{\"price\":1000,\"Desc\":\"Without TS\",\"Sub Price\":1000,\"level\":\"panic\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  unlink(tmpFile);
+} END_TEST
+
 
 Suite *logger_suite(void) {
   Suite *s;
@@ -156,6 +237,8 @@ Suite *logger_suite(void) {
   tcase_add_test(tc_core, test_logger_int);
   tcase_add_test(tc_core, test_logger_str);
   tcase_add_test(tc_core, test_logger_multiple_call);
+  tcase_add_test(tc_core, test_logger_levels);
+  tcase_add_test(tc_core, test_logger_context);
   suite_add_tcase(s, tc_core);
 
   return s;

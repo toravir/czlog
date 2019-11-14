@@ -15,7 +15,7 @@ int main ()
     doLog(hdl, LOG_INFO, L_INT("Debug", 1000), L_STR("Desc", "Million Dollars"), L_PRINT);
     setLogAutoTs(hdl, FALSE);
     //doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_PRINT);
-    doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_END);
+    doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_MORE);
     saveToCtx(hdl);
     fooBar(cloneHdl(hdl));
     doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_PRINT);

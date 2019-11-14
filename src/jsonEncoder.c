@@ -69,9 +69,9 @@ static int saveToCtxJson (logHandle *hdl)
     if (hdl->_ctx_offset) {
         hdl->_buf[0]=' ';
     }
-    memcpy(hdl->_ctx + hdl->_ctx_offset, hdl->_buf, hdl->_buf_offset);
+    memcpy(hdl->_ctx + hdl->_ctx_offset, hdl->_buf, hdl->_buf_offset+1);
     hdl->_ctx_offset += hdl->_buf_offset;
-    hdl->_ctx[hdl->_ctx_offset-1]=',';
+    hdl->_ctx[hdl->_ctx_offset++] = ',';
     return 0;
 }
 

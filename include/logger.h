@@ -45,7 +45,6 @@ typedef struct dtype_st_ {
 	int type;
 } dType;
 
-#define END_KV (999)
 #define PRT_KV (888)
 #define MOR_KV (777)
 
@@ -53,11 +52,10 @@ typedef struct dtype_st_ {
 #define STR_KV (101)
 #define TS_KV  (102)
 
-extern dType intType, strType, endType, tsType, prtType, moreType;
+extern dType intType, strType, tsType, prtType, moreType;
 
 #define L_INT(k, v) &intType, (const char*)k, (int)v
 #define L_STR(k, v) &strType, (const char*)k, (const char*)v
-#define L_END &endType // , (const char*)NULL, (const char*)NULL
 #define L_PRINT &prtType
 #define L_MORE &moreType
 

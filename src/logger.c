@@ -87,13 +87,6 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
     while (end == 0) {
         dType *nxtType = (dType*)va_arg(vl, dType*);
         switch (nxtType->type) {
-            case END_KV:
-                v->addStrTuple(hdl, gLevelKey, logLevelStr(hdl->curMsgLevel));
-                if (hdl->autoTs) v->addTs(hdl, gTsKey);
-                v->addEndDoc(hdl);
-                hdl->terminated = TRUE;
-                end = 1;
-                break;
             case MOR_KV: {
                 end = 1;
                 break;
@@ -155,11 +148,13 @@ logHandle *newlogHandleFd (int destFd, logLevel lvl, boolean isBinary)
 {
     //Cannot write to stdin
     if (!destFd) {
+        printf("zero destFD!");
         return NULL;
     }
 
     logHandle *newHdl = calloc(1, sizeof(logHandle));
     if (!newHdl) {
+        printf("Calloc Failure..");
         return NULL;
     }
     newHdl->fmt = LOG_JSON_ENCODING;

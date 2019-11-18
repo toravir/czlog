@@ -105,7 +105,7 @@ static int addIntTupleCbor (logHandle *hdl, const char *key, int val)
         byte v = (byte) val;
         hdl->_buf[hdl->_buf_offset++] = major|v;
     } else {
-        appendIntValue(hdl, major, val);
+        appendIntValue(hdl, major, intVal);
     }
     return 0;
 }

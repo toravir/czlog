@@ -244,9 +244,9 @@ START_TEST(test_bin_logger_create) {
   doLog(m, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_PRINT);
   FILE *rdback = fopen(tmpFile, "rb");
   const char expected[] = {
-         0xbf, 0x65, 0x70, 0x72, 0x69, 0x63, 0x65, 0x19, 0x03, 0xe8, 0x64, 0x44, 0x65, 0x73, 0x63, 0x6a,
-         0x57, 0x69, 0x74, 0x68, 0x6f, 0x75, 0x74, 0x20, 0x54, 0x53, 0x65, 0x6c, 0x65, 0x76, 0x65, 0x6c,
-         0x64, 0x77, 0x61, 0x72, 0x6e, 0xff,
+         0xbf, 0x65, 'p', 'r', 'i', 'c', 'e', 0x19, 0x03, 0xe8, 
+         0x64, 'D', 'e', 's', 'c', 0x6a, 'W', 'i', 't', 'h', 'o', 'u', 't', ' ', 'T', 'S', 
+         0x65, 'l', 'e', 'v', 'e', 'l', 0x64, 'w', 'a', 'r', 'n', 0xff,
   };
   const char *bytes = readNBytes(rdback, sizeof(expected));
   for (int i = 0; i < sizeof(expected); i++)
@@ -254,6 +254,67 @@ START_TEST(test_bin_logger_create) {
               "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
 
   free((void*)bytes);
+  unlink(tmpFile);
+} END_TEST
+
+START_TEST(test_bin_logger_int) {
+  logHandle *m;
+  char tmpFile[] = "/tmp/libczTest_XXXXXX";
+  m = newlogHandleFd(mkstemp(tmpFile), LOG_DEBUG, 1);
+  ck_assert_ptr_ne(m, NULL);
+  setLogAutoTs(m, FALSE);
+  FILE *rdback = fopen(tmpFile, "rb");
+
+  doLog(m, LOG_WARN, L_INT("price", 1000), L_PRINT);
+#define EXPECTED_TC1  "\xbf\x65price\x19\x03\xe8" \
+                "\x65level\x64warn\xff"
+  const char *expected = EXPECTED_TC1;
+  const char *bytes = readNBytes(rdback, sizeof(EXPECTED_TC1));
+  for (int i = 0; i < sizeof(EXPECTED_TC1); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  doLog(m, LOG_WARN, L_INT("price", 0), L_PRINT);
+#define EXPECTED_TC2  "\xbf\x65price\x00" \
+                "\x65level\x64warn\xff"
+  expected = EXPECTED_TC2;
+  bytes = readNBytes(rdback, sizeof(EXPECTED_TC2));
+  for (int i = 0; i < sizeof(EXPECTED_TC2); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  doLog(m, LOG_WARN, L_INT("price", -1000), L_PRINT);
+#define EXPECTED_TC3  "\xbf\x65price\x39\x03\xe7" \
+                "\x65level\x64warn\xff"
+  expected = EXPECTED_TC3;
+  bytes = readNBytes(rdback, sizeof(EXPECTED_TC3));
+  for (int i = 0; i < sizeof(EXPECTED_TC3); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  doLog(m, LOG_WARN, L_INT("price", 2147483647), L_PRINT);
+#define EXPECTED_TC4  "\xbf\x65price\x1a\x7F\xFF\xFF\xFF" \
+                "\x65level\x64warn\xff"
+  expected = EXPECTED_TC4;
+  bytes = readNBytes(rdback, sizeof(EXPECTED_TC4));
+  for (int i = 0; i < sizeof(EXPECTED_TC4); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  doLog(m, LOG_WARN, L_INT("price", -2147483647), L_PRINT);
+#define EXPECTED_TC5  "\xbf\x65price\x3a\x7F\xFF\xFF\xFE" \
+                "\x65level\x64warn\xff"
+  expected = EXPECTED_TC5;
+  bytes = readNBytes(rdback, sizeof(EXPECTED_TC5));
+  for (int i = 0; i < sizeof(EXPECTED_TC5); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
   unlink(tmpFile);
 } END_TEST
 
@@ -274,6 +335,7 @@ Suite *logger_suite(void) {
   tcase_add_test(tc_core, test_logger_context);
 
   tcase_add_test(tc_core, test_bin_logger_create);
+  tcase_add_test(tc_core, test_bin_logger_int);
   suite_add_tcase(s, tc_core);
 
   return s;

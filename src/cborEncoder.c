@@ -139,6 +139,18 @@ static int addTsCbor (logHandle *hdl, const char *key)
     return 0;
 }
 
+static int saveToCtxCbor (logHandle *hdl)
+{
+    memcpy(hdl->_ctx + hdl->_ctx_offset, hdl->_buf, hdl->_buf_offset+1);
+    hdl->_ctx_offset += hdl->_buf_offset;
+    return 0;
+}
+
+static int beginMarkerSzCbor (void)
+{
+    return 1;
+}
+
 int initCborEncoder (void)
 {
     majorTypeUnsignedInt  <<= majorOffset;
@@ -157,6 +169,8 @@ int initCborEncoder (void)
         .addBeginDoc = addBeginDocCbor,
         .addEndDoc   = addEndDocCbor,
         .addTs       = addTsCbor,
+        .saveToCtx   = saveToCtxCbor,
+        .beginMarkerSz = beginMarkerSzCbor,
     };
     registerLogEncoder(LOG_CBOR_ENCODING, &cborEncoder);
 }

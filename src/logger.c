@@ -148,11 +148,13 @@ logHandle *newlogHandleFd (int destFd, logLevel lvl, boolean isBinary)
 {
     //Cannot write to stdin
     if (!destFd) {
+        printf("zero destFD!");
         return NULL;
     }
 
     logHandle *newHdl = calloc(1, sizeof(logHandle));
     if (!newHdl) {
+        printf("Calloc Failure..");
         return NULL;
     }
     newHdl->fmt = LOG_JSON_ENCODING;

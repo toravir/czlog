@@ -40,7 +40,7 @@ TODO:
  -  ~~Add CBOR Encoding~~
  -  ~~Adding Context / Cloning Handles~~
  -  Add Documentation (auto-gen doc ??)
- -  Automated Tests
+ -  ~~Automated Tests~~
  -  Adding more scalar data types
  -  Benchmarks
  -  Travis CI Integration ?

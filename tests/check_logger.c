@@ -116,6 +116,32 @@ START_TEST(test_logger_str) {
   unlink(tmpFile);
 } END_TEST
 
+START_TEST(test_logger_bool) {
+  logHandle *m;
+  char tmpFile[] = "/tmp/libczTest_XXXXXX";
+  m = newlogHandleFd(mkstemp(tmpFile), LOG_DEBUG, 0);
+  ck_assert_ptr_ne(m, NULL);
+  FILE *rdback = fopen(tmpFile, "r");
+  char *logLine = NULL;
+  size_t lineLen = 0;
+  char *expectedBuf = NULL;
+  setLogAutoTs(m, FALSE);
+
+  doLog(m, LOG_WARN, L_STR("StrVal", "F"), L_BOOL("works", 1), L_PRINT);
+  expectedBuf="{\"StrVal\":\"F\",\"works\":true,\"level\":\"warn\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  doLog(m, LOG_WARN, L_STR("StrVal", ""), L_BOOL("darkside", 0), L_PRINT);
+  expectedBuf="{\"StrVal\":\"\",\"darkside\":false,\"level\":\"warn\"}";
+  getline(&logLine, &lineLen, rdback);
+  ck_assert_str_eq(logLine, expectedBuf);
+  free((void*)logLine);
+
+  unlink(tmpFile);
+} END_TEST
+
 START_TEST(test_logger_multiple_call) {
   logHandle *m;
   char tmpFile[] = "/tmp/libczTest_XXXXXX";
@@ -367,6 +393,41 @@ START_TEST(test_bin_logger_str) {
   unlink(tmpFile);
 } END_TEST
 
+START_TEST(test_bin_logger_bool) {
+  logHandle *m;
+  char tmpFile[] = "/tmp/libczTest_XXXXXX";
+  m = newlogHandleFd(mkstemp(tmpFile), LOG_DEBUG, 1);
+  ck_assert_ptr_ne(m, NULL);
+  setLogAutoTs(m, FALSE);
+  FILE *rdback = fopen(tmpFile, "rb");
+
+  doLog(m, LOG_WARN, L_STR("StrVal", "F"), L_BOOL("works", 1), L_PRINT);
+#undef EXPECTED_TC1
+#define EXPECTED_TC1  "\xbf\x66StrVal\x61" "F" \
+                "\x65works\xf5" \
+                "\x65level\x64warn\xff"
+  const char *expected = EXPECTED_TC1;
+  const char *bytes = readNBytes(rdback, sizeof(EXPECTED_TC1));
+  for (int i = 0; i < sizeof(EXPECTED_TC1); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  doLog(m, LOG_WARN, L_STR("StrVal", ""), L_BOOL("darkside", 0), L_PRINT);
+#undef EXPECTED_TC2
+#define EXPECTED_TC2  "\xbf\x66StrVal\x60" \
+                "\x68" "darkside\xf4" \
+                "\x65level\x64warn\xff"
+  expected = EXPECTED_TC2;
+  bytes = readNBytes(rdback, sizeof(EXPECTED_TC2));
+  for (int i = 0; i < sizeof(EXPECTED_TC2); i++)
+      ck_assert_msg(bytes[i] == expected[i],
+              "At index: %d, expected: 0x%02X, got 0x%02X", i, expected[i], bytes[i]);
+  free((void*)bytes);
+
+  unlink(tmpFile);
+} END_TEST
+
 START_TEST(test_bin_logger_context) {
   logHandle *m;
   char tmpFile[] = "/tmp/libczTest_XXXXXX";
@@ -437,6 +498,7 @@ Suite *logger_suite(void) {
   tcase_add_test(tc_core, test_logger_create);
   tcase_add_test(tc_core, test_logger_int);
   tcase_add_test(tc_core, test_logger_str);
+  tcase_add_test(tc_core, test_logger_bool);
   tcase_add_test(tc_core, test_logger_multiple_call);
   tcase_add_test(tc_core, test_logger_levels);
   tcase_add_test(tc_core, test_logger_context);
@@ -444,6 +506,7 @@ Suite *logger_suite(void) {
   tcase_add_test(tc_core, test_bin_logger_create);
   tcase_add_test(tc_core, test_bin_logger_int);
   tcase_add_test(tc_core, test_bin_logger_str);
+  tcase_add_test(tc_core, test_bin_logger_bool);
   tcase_add_test(tc_core, test_bin_logger_context);
   suite_add_tcase(s, tc_core);
 

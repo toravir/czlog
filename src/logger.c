@@ -103,6 +103,12 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                 v->addStrTuple(hdl, k, val);
                 break;
             }
+            case BOOL_KV: {
+                k = (char*)va_arg(vl, char*);
+                unsigned char val = (unsigned char)va_arg(vl, int);
+                v->addBoolTuple(hdl, k, val);
+                break;
+            }
             case PRT_KV: {
                 if (!hdl->terminated) {
                     v->addStrTuple(hdl, gLevelKey, logLevelStr(hdl->curMsgLevel));

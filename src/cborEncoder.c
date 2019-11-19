@@ -85,6 +85,18 @@ static int appendStr(logHandle *hdl, const char *str)
     return 0;
 }
 
+static int appendBool(logHandle *hdl, unsigned char bval)
+{
+    byte major = majorTypeSimplenFloat;
+    byte val = additionalTypeBoolFalse;
+
+    if (bval) {
+        val = additionalTypeBoolTrue;
+    }
+    hdl->_buf[hdl->_buf_offset++] = major|val;
+    return 0;
+}
+
 static int appendKey (logHandle *hdl, const char *key)
 {
     return appendStr(hdl, key);
@@ -114,6 +126,13 @@ static int addStrTupleCbor (logHandle *hdl, const char *key, const char *val)
 {
     appendKey(hdl, key);
     appendStr(hdl, val);
+    return 0;
+}
+
+static int addBoolTupleCbor (logHandle *hdl, const char *key, unsigned char val)
+{
+    appendKey(hdl, key);
+    appendBool(hdl, val);
     return 0;
 }
 
@@ -166,6 +185,7 @@ int initCborEncoder (void)
         .encoderName = "CBOR",
         .addIntTuple = addIntTupleCbor,
         .addStrTuple = addStrTupleCbor,
+        .addBoolTuple = addBoolTupleCbor,
         .addBeginDoc = addBeginDocCbor,
         .addEndDoc   = addEndDocCbor,
         .addTs       = addTsCbor,

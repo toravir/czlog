@@ -19,4 +19,5 @@ int main ()
     saveToCtx(hdl);
     fooBar(cloneHdl(hdl));
     doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_PRINT);
+    doLog(hdl, LOG_WARN, L_INT("price", 1000), L_STR("Desc", "Without TS"), L_BOOL("works", 1), L_PRINT);
 }

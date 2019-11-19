@@ -48,14 +48,16 @@ typedef struct dtype_st_ {
 #define PRT_KV (888)
 #define MOR_KV (777)
 
-#define INT_KV (100)
-#define STR_KV (101)
-#define TS_KV  (102)
+#define INT_KV   (100)
+#define STR_KV   (101)
+#define BOOL_KV  (102)
+#define TS_KV    (103)
 
-extern dType intType, strType, tsType, prtType, moreType;
+extern dType intType, strType, tsType, prtType, moreType, boolType;
 
 #define L_INT(k, v) &intType, (const char*)k, (int)v
 #define L_STR(k, v) &strType, (const char*)k, (const char*)v
+#define L_BOOL(k, v) &boolType, (const char*)k, (unsigned char)v
 #define L_PRINT &prtType
 #define L_MORE &moreType
 

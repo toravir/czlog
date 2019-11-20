@@ -9,6 +9,8 @@ DEBUG_FLAG := -g
 
 TGT_SO := liblogger.so
 
+all : clean $(TGT_SO) example test
+
 $(TGT_SO): $(ALL_SRC_FILES)
 	gcc -I include -shared -fpic $(DEBUG_FLAG) $(ALL_SRC_FILES) -Wl,-init,logger_init -o $(TGT_SO)
 
@@ -28,6 +30,4 @@ test: $(TGT_SO) tests/check_logger.c
 	gcc $(DEBUG_FLAG) -I include -L . tests/check_logger.c -llogger -o testLogger -lcheck -lm -lpthread -lrt -lsubunit
 	@echo "Running Unit-tests..."
 	LD_LIBRARY_PATH=`pwd` ./testLogger
-
-all : clean $(TGT_SO) example test
 

@@ -29,6 +29,18 @@ static int addStrTupleJson (logHandle *hdl, const char *key, const char *val)
     return 0;
 }
 
+static int addBoolTupleJson (logHandle *hdl, const char *key, unsigned char val)
+{
+    addDelimIfNeeded(hdl);
+    const char *jsonval = "true";
+    if (!val) {
+        jsonval = "false";
+    }
+    int n = snprintf(hdl->_buf+hdl->_buf_offset, sizeof(hdl->_buf)-hdl->_buf_offset-1, "\"%s\":%s", key, jsonval);
+    hdl->_buf_offset += n;
+    return 0;
+}
+
 static int addBeginDocJson (logHandle *hdl)
 {
     int n = snprintf(hdl->_buf+hdl->_buf_offset, sizeof(hdl->_buf)-hdl->_buf_offset-1, "{");
@@ -43,11 +55,12 @@ static int addEndDocJson (logHandle *hdl)
     return 0;
 }
 
-static int addTsJson (logHandle *hdl, const char *key)
+static int addTsJson (logHandle *hdl, const char *key, time_t ts)
 {
-    time_t now;
-    time(&now);
-    struct tm *p = localtime(&now);
+    if (!ts) {
+        time(&ts);
+    }
+    struct tm *p = localtime(&ts);
 
     addDelimIfNeeded(hdl);
     int n = snprintf(hdl->_buf+hdl->_buf_offset, sizeof(hdl->_buf)-hdl->_buf_offset-1, "\"%s\":\"", key);
@@ -87,6 +100,7 @@ int initJsonEncoder (void)
         .encoderName = "JSON",
         .addIntTuple = addIntTupleJson,
         .addStrTuple = addStrTupleJson,
+        .addBoolTuple = addBoolTupleJson,
         .addBeginDoc = addBeginDocJson,
         .addEndDoc   = addEndDocJson,
         .addTs       = addTsJson,

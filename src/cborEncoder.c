@@ -85,6 +85,18 @@ static int appendStr(logHandle *hdl, const char *str)
     return 0;
 }
 
+static int appendBool(logHandle *hdl, unsigned char bval)
+{
+    byte major = majorTypeSimplenFloat;
+    byte val = additionalTypeBoolFalse;
+
+    if (bval) {
+        val = additionalTypeBoolTrue;
+    }
+    hdl->_buf[hdl->_buf_offset++] = major|val;
+    return 0;
+}
+
 static int appendKey (logHandle *hdl, const char *key)
 {
     return appendStr(hdl, key);
@@ -117,6 +129,13 @@ static int addStrTupleCbor (logHandle *hdl, const char *key, const char *val)
     return 0;
 }
 
+static int addBoolTupleCbor (logHandle *hdl, const char *key, unsigned char val)
+{
+    appendKey(hdl, key);
+    appendBool(hdl, val);
+    return 0;
+}
+
 static int addBeginDocCbor (logHandle *hdl)
 {
     hdl->_buf[hdl->_buf_offset++] = majorTypeMap|additionalTypeUnspecCount;
@@ -129,13 +148,15 @@ static int addEndDocCbor (logHandle *hdl)
     return 0;
 }
 
-static int addTsCbor (logHandle *hdl, const char *key)
+static int addTsCbor (logHandle *hdl, const char *key, time_t ts)
 {
-    time_t now;
-    time(&now);
+    if (ts == 0) {
+        time(&ts);
+    }
 
+    appendKey(hdl, key);
     hdl->_buf[hdl->_buf_offset++] = majorTypeTags|additionalTypeTimestamp;
-    appendIntValue(hdl, majorTypeUnsignedInt, (int)now);
+    appendIntValue(hdl, majorTypeUnsignedInt, (int)ts);
     return 0;
 }
 
@@ -166,6 +187,7 @@ int initCborEncoder (void)
         .encoderName = "CBOR",
         .addIntTuple = addIntTupleCbor,
         .addStrTuple = addStrTupleCbor,
+        .addBoolTuple = addBoolTupleCbor,
         .addBeginDoc = addBeginDocCbor,
         .addEndDoc   = addEndDocCbor,
         .addTs       = addTsCbor,

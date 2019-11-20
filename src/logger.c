@@ -103,10 +103,22 @@ int doLog (logHandle *hdl, logLevel lgLvl, ...)
                 v->addStrTuple(hdl, k, val);
                 break;
             }
+            case BOOL_KV: {
+                k = (char*)va_arg(vl, char*);
+                unsigned char val = (unsigned char)va_arg(vl, int);
+                v->addBoolTuple(hdl, k, val);
+                break;
+            }
+            case TS_KV: {
+                k = (char*)va_arg(vl, char*);
+                time_t val = (time_t)va_arg(vl, int);
+                v->addTs(hdl, k, val);
+                break;
+            }
             case PRT_KV: {
                 if (!hdl->terminated) {
                     v->addStrTuple(hdl, gLevelKey, logLevelStr(hdl->curMsgLevel));
-                    if (hdl->autoTs) v->addTs(hdl, gTsKey);
+                    if (hdl->autoTs) v->addTs(hdl, gTsKey, 0);
                     v->addEndDoc(hdl);
                 }
                 int skipBytes = 0;

@@ -2,6 +2,7 @@
 #define __LOGGER_H__
 
 #include <stdarg.h>
+#include <time.h>
 #include <stdio.h>
 
 typedef unsigned char boolean;
@@ -58,6 +59,7 @@ extern dType intType, strType, tsType, prtType, moreType, boolType;
 #define L_INT(k, v) &intType, (const char*)k, (int)v
 #define L_STR(k, v) &strType, (const char*)k, (const char*)v
 #define L_BOOL(k, v) &boolType, (const char*)k, (unsigned char)v
+#define L_TIME(k, v) &tsType, (const char*)k, (time_t)v
 #define L_PRINT &prtType
 #define L_MORE &moreType
 

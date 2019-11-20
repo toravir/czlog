@@ -148,13 +148,15 @@ static int addEndDocCbor (logHandle *hdl)
     return 0;
 }
 
-static int addTsCbor (logHandle *hdl, const char *key)
+static int addTsCbor (logHandle *hdl, const char *key, time_t ts)
 {
-    time_t now;
-    time(&now);
+    if (ts == 0) {
+        time(&ts);
+    }
 
+    appendKey(hdl, key);
     hdl->_buf[hdl->_buf_offset++] = majorTypeTags|additionalTypeTimestamp;
-    appendIntValue(hdl, majorTypeUnsignedInt, (int)now);
+    appendIntValue(hdl, majorTypeUnsignedInt, (int)ts);
     return 0;
 }
 

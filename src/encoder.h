@@ -1,7 +1,7 @@
 #ifndef __ENCODER_H__
 #define __ENCODER_H__
 #include <time.h>
-#include "logger.h"
+#include "czlog.h"
 
 #define MAX_ENCODER_NAME (128)
 

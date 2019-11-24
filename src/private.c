@@ -1,4 +1,4 @@
-#include "logger.h"
+#include "czlog.h"
 
 dType intType = {.magic=0xaabbccdd, .type=INT_KV};
 dType strType = {.magic=0xaabbccdd, .type=STR_KV};

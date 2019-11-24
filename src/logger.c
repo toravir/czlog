@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "logger.h"
+#include "czlog.h"
 #include "encoder.h"
 #include "jsonEncoder.h"
 #include "cborEncoder.h"

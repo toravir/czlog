@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: LIB CZLOG
+Description: C Library for structured logging (text in JSON or binary in CBOR)
+Version: @VERSION@
+Libs: -L$(libdir} -lczlog
+Cflags: -I${includedir}

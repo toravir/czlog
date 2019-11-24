@@ -1,6 +1,6 @@
 #include <time.h>
 #include <string.h>
-#include "logger.h"
+#include "czlog.h"
 #include "encoder.h"
 #include "cborEncoder.h"
 

@@ -1,5 +1,5 @@
 #include <check.h>
-#include "../include/logger.h"
+#include "../src/czlog.h"
 #include <stdlib.h>
 #include <unistd.h>
 

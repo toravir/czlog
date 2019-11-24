@@ -1,4 +1,4 @@
-#include "logger.h"
+#include "czlog.h"
 
 int main () 
 {

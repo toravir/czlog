@@ -1,6 +1,6 @@
 #include <string.h>
 #include <time.h>
-#include "logger.h"
+#include "czlog.h"
 #include "encoder.h"
 #include "jsonEncoder.h"
 
